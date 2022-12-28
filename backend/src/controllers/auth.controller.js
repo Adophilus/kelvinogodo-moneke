@@ -1,6 +1,8 @@
 const crypto = require('crypto')
 const jwt = require('jsonwebtoken')
 const HttpStatus = require('http-status')
+const config = require('../config')
+const Mailer = require('../services/mailer.service.js')
 const User = require('../models/user.model')
 const Token = require('../models/token.model')
 
@@ -11,17 +13,16 @@ const verifyUser = async (req, res) => {
     const email = decode.email
     const user = await User.findOne({ email: email })
     if(user.rememberme){
-      res.json({
+      return res.json({
         status: 'ok',
       })
     }
-    else{
-      res.json({
+    
+    return res.json({
         status: 'false',
       })
-    }
   } catch (error) {
-    res.json({ status: `error ${error}` })
+    return res.json({ status: `error ${error}` })
   }
 }
 
@@ -66,11 +67,10 @@ const registerUser = async (req, res) => {
 
     const url= `${req.origin}users/${user._id}/verify/${token.token}`
     await Mailer.send({ to: user.email, template: config.mail.templates.VERIFY_EMAIL })
-    return res.send(HttpStatus.OK).json({ status: 'ok' })
+    return res.status(HttpStatus.OK).json({ status: 'ok' })
   } catch (error) {
     console.log(error)
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error!'})
-    json({ status: 'error', error: 'duplicate email' })
   }
 }
 
