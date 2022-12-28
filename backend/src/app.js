@@ -7,15 +7,12 @@ const dotenv = require('dotenv')
 dotenv.config()
 const config = require('./config')
 
-// const User = require('./models/user.model')
-// const Token = require('./models/token')
-// const sendEmail = require('./utils/sendEmail')
 const routes = require('./routes')
 
 const app = express()
 app.use(cors())
 app.use(express.json())
-app.use(morgan())
+app.use(morgan("combined"))
 app.use(routes)
 
 module.exports = {

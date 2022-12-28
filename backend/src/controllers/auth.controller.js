@@ -1,9 +1,10 @@
 const crypto = require('crypto')
 const jwt = require('jsonwebtoken')
+const HttpStatus = require('http-status')
 const User = require('../models/user.model')
 const Token = require('../models/token.model')
 
-const verify = async (req, res) => {
+const verifyUser = async (req, res) => {
   const token = req.headers['x-access-token']
   try {
     const decode = jwt.verify(token, 'secret1258')
@@ -38,9 +39,9 @@ const loginUser = async (req, res) => {
       'secret1258'
     )
     return res.json({ status: 'ok', user: token })
-  } else {
-    return res.json({ status: 'error', user: false })
   }
+
+  return res.json({ status: 'error', user: false })
 }
 
 const registerUser = async (req, res) => {
@@ -63,14 +64,13 @@ const registerUser = async (req, res) => {
       token: crypto.randomBytes(32).toString("hex")
     })
 
-    const url= `${process.env.BASE_URL}users/${user._id}/verify/${token.token}`
-    console.log(process.env)
-    // console.log(process.env)
-    await sendEmail(user.email,'verify email',url)
-    return res.json({ status: 'ok' })
+    const url= `${req.origin}users/${user._id}/verify/${token.token}`
+    await Mailer.send({ to: user.email, template: config.mail.templates.VERIFY_EMAIL })
+    return res.send(HttpStatus.OK).json({ status: 'ok' })
   } catch (error) {
     console.log(error)
-    return res.json({ status: 'error', error: 'duplicate email' })
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error!'})
+    json({ status: 'error', error: 'duplicate email' })
   }
 }
 

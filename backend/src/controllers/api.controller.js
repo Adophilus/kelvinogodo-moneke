@@ -37,7 +37,7 @@ const fundWallet = async (req, res) => {
     console.log(error)
     res.json({ status: 'error' })
   }
-})
+}
 
 const invest = async (req, res) => {
   const token = req.headers['x-access-token']
@@ -123,12 +123,12 @@ const withdraw = async (req, res) => {
     console.log(error)
     res.json({ status: 'error' })
   }
-})
+}
 
 const getUsers = async (req, res) => {
   const users = await User.find()
   res.json(users)
   console.log(users)
-})
+}
 
 module.exports = { getData, fundWallet, invest, withdraw, getUsers }
